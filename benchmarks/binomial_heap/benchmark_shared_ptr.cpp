@@ -1,6 +1,6 @@
 #include <benchmark/benchmark.h>
 
-#include "binomial_heap_semantic_ptr.h"
+#include "binomial_heap_shared_ptr.h"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -15,7 +15,7 @@ static BinomialHeap::priqueue build_heap(int n) {
 }
 
 // ---------------------------------------------------------------------------
-// Benchmarks for BinomialHeap (semantic_ptr / baseline generated code)
+// Benchmarks for BinomialHeap (shared_ptr / baseline generated code)
 // ---------------------------------------------------------------------------
 
 // Insert n elements one by one into an initially empty heap.

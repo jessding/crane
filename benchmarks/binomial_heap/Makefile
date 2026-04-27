@@ -10,8 +10,8 @@ endif
 INCLUDES += -I$(BENCHMARK_PREFIX)/include
 LDFLAGS   = -L$(BENCHMARK_PREFIX)/lib -lbenchmark -lbenchmark_main
 
-SEMANTIC_PTR_BIN = run_benchmarks_semantic_ptr
-SEMANTIC_PTR_SRC = benchmark_semantic_ptr.cpp binomial_heap_semantic_ptr.cpp
+SHARED_PTR_BIN = run_benchmarks_shared_ptr
+SHARED_PTR_SRC = benchmark_shared_ptr.cpp binomial_heap_shared_ptr.cpp
 
 REDESIGN_BIN = run_benchmarks_redesign
 REDESIGN_SRC = benchmark_redesign.cpp binomial_heap_redesign.cpp
@@ -20,18 +20,18 @@ COMPARE_PY = $(BENCHMARK_PREFIX)/share/googlebenchmark/tools/compare.py
 
 .PHONY: all clean compare
 
-all: $(SEMANTIC_PTR_BIN) $(REDESIGN_BIN)
+all: $(SHARED_PTR_BIN) $(REDESIGN_BIN)
 
-$(SEMANTIC_PTR_BIN): $(SEMANTIC_PTR_SRC) binomial_heap_semantic_ptr.h
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $(SEMANTIC_PTR_SRC) $(LDFLAGS)
+$(SHARED_PTR_BIN): $(SHARED_PTR_SRC) binomial_heap_shared_ptr.h
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $(SHARED_PTR_SRC) $(LDFLAGS)
 
 $(REDESIGN_BIN): $(REDESIGN_SRC) binomial_heap_redesign.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $(REDESIGN_SRC) $(LDFLAGS)
 
-compare: $(SEMANTIC_PTR_BIN) $(REDESIGN_BIN)
-	./$(SEMANTIC_PTR_BIN) --benchmark_out=semantic_ptr.json --benchmark_out_format=json
+compare: $(SHARED_PTR_BIN) $(REDESIGN_BIN)
+	./$(SHARED_PTR_BIN) --benchmark_out=shared_ptr.json --benchmark_out_format=json
 	./$(REDESIGN_BIN)     --benchmark_out=redesign.json     --benchmark_out_format=json
-	python3 $(COMPARE_PY) benchmarks semantic_ptr.json redesign.json
+	python3 $(COMPARE_PY) benchmarks shared_ptr.json redesign.json
 
 clean:
-	rm -f $(SEMANTIC_PTR_BIN) $(REDESIGN_BIN) *.o semantic_ptr.json redesign.json
+	rm -f $(SHARED_PTR_BIN) $(REDESIGN_BIN) *.o shared_ptr.json redesign.json
