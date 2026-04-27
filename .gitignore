@@ -65,3 +65,11 @@ tests/monadic/skiplist_bde/BDE_TEST_ADAPTATION.md
 *.exe
 /theories/cpp/crane-stm/build
 /theories/cpp_bde/crane-stm/build
+
+# Claude Code
+.claude/
+
+# Benchmark build outputs
+/benchmarks/*/run_benchmarks
+/benchmarks/**/*.o
+/benchmarks/**/*.dSYM
