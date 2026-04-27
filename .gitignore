@@ -70,6 +70,7 @@ tests/monadic/skiplist_bde/BDE_TEST_ADAPTATION.md
 .claude/
 
 # Benchmark build outputs
-/benchmarks/*/run_benchmarks
+/benchmarks/*/run_benchmarks*
 /benchmarks/**/*.o
 /benchmarks/**/*.dSYM
+/benchmarks/**/*.json

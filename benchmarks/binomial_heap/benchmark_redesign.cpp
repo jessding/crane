@@ -1,6 +1,6 @@
 #include <benchmark/benchmark.h>
 
-#include "binomial_heap_semantic_ptr.h"
+#include "binomial_heap_redesign.h"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -15,11 +15,11 @@ static BinomialHeap::priqueue build_heap(int n) {
 }
 
 // ---------------------------------------------------------------------------
-// Benchmarks for BinomialHeap (semantic_ptr / baseline generated code)
+// Benchmarks for BinomialHeap (redesign / value semantics)
 // ---------------------------------------------------------------------------
 
 // Insert n elements one by one into an initially empty heap.
-static void BM_SemanticPtr_Insert(benchmark::State& state) {
+static void BM_Insert(benchmark::State& state) {
     const int n = state.range(0);
     for (auto _ : state) {
         auto q = build_heap(n);
@@ -29,7 +29,7 @@ static void BM_SemanticPtr_Insert(benchmark::State& state) {
 }
 
 // Merge two heaps of n/2 elements each.
-static void BM_SemanticPtr_Merge(benchmark::State& state) {
+static void BM_Merge(benchmark::State& state) {
     const int n = state.range(0);
     auto p = build_heap(n / 2);
     auto q = build_heap(n / 2);
@@ -41,7 +41,7 @@ static void BM_SemanticPtr_Merge(benchmark::State& state) {
 }
 
 // find_max on a heap of n elements.
-static void BM_SemanticPtr_FindMax(benchmark::State& state) {
+static void BM_FindMax(benchmark::State& state) {
     const int n = state.range(0);
     auto q = build_heap(n);
     for (auto _ : state) {
@@ -52,7 +52,7 @@ static void BM_SemanticPtr_FindMax(benchmark::State& state) {
 }
 
 // Repeatedly delete_max until the heap is empty (measures full drain).
-static void BM_SemanticPtr_DeleteMax(benchmark::State& state) {
+static void BM_DeleteMax(benchmark::State& state) {
     const int n = state.range(0);
     for (auto _ : state) {
         state.PauseTiming();
@@ -70,7 +70,7 @@ static void BM_SemanticPtr_DeleteMax(benchmark::State& state) {
 }
 
 // Full cycle: insert n elements then drain via delete_max.
-static void BM_SemanticPtr_InsertDeleteCycle(benchmark::State& state) {
+static void BM_InsertDeleteCycle(benchmark::State& state) {
     const int n = state.range(0);
     for (auto _ : state) {
         auto q = build_heap(n);
@@ -84,10 +84,14 @@ static void BM_SemanticPtr_InsertDeleteCycle(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * n);
 }
 
-BENCHMARK(BM_SemanticPtr_Insert)->Range(8, 1 << 12);
-BENCHMARK(BM_SemanticPtr_Merge)->Range(8, 1 << 12);
-BENCHMARK(BM_SemanticPtr_FindMax)->Range(8, 1 << 12);
-BENCHMARK(BM_SemanticPtr_DeleteMax)->Range(8, 1 << 12);
-BENCHMARK(BM_SemanticPtr_InsertDeleteCycle)->Range(8, 1 << 12);
+BENCHMARK(BM_Insert)->Range(8, 1 << 12);
+BENCHMARK(BM_Merge)->Range(8, 1 << 12);
+BENCHMARK(BM_FindMax)->Range(8, 1 << 12);
+// Capped at 1<<10: value semantics deep-clone on every cons call, making
+// delete_max O(n) per call instead of O(log n). Full drain is O(n^2) —
+// at n=4096 this takes minutes. The cap keeps the benchmark tractable while
+// still showing the degradation trend.
+BENCHMARK(BM_DeleteMax)->Range(8, 1 << 10);
+BENCHMARK(BM_InsertDeleteCycle)->Range(8, 1 << 10);
 
 BENCHMARK_MAIN();
